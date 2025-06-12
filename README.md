@@ -114,9 +114,3 @@ Under the guidance of Prof. N.M. Dimble, Department of Computer Engineering, NGI
 ## Acknowledgments
 
 We express our sincere gratitude to our guide Prof. N.M. Dimble, project coordinator Prof. B.M. Borhade, Head of Department Prof. C.S. Wagh, and all faculty members for their valuable support and guidance throughout the project.
-
----
-
-This README provides a thorough description of your NGIFOE ERP System project, its features, motivation, and instructions for setup and usage, suitable for your GitHub repository[1]. If you need, I can help you add screenshots or further deployment instructions.
-
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/14477163/75dadbc0-a1f7-4c24-9195-deae217ff241/BE_PROJECT_STAGE_II_Report_Final.pdf
