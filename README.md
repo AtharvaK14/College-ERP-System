@@ -1,96 +1,122 @@
-# College-ERP
-A college management system built using Django framework. It is designed for interactions between students and teachers. Features include attendance, marks and time table.
+# NGIFOE ERP System
 
-## Installation
+## Overview
 
-Python and Django need to be installed
+The NGIFOE ERP System is a comprehensive College Information Management System developed using the Django framework. It is designed to facilitate seamless interaction between students, teachers, and administrators by centralizing and automating key college management functions such as attendance, marks, and timetable management. The system addresses the challenges of manual data handling in educational institutions, providing a smart, efficient, and secure platform to manage college operations from anywhere through a unified dashboard.
 
-```bash
-pip install django
-```
+## Features
 
-## Usage
+- **Role-Based Access**: Separate interfaces and functionalities for Students, Teachers, and Administrators.
+- **Student Profile Management**: Students can view and update their personal details including attendance, marks, and timetable.
+- **Teacher Management**: Teachers can record, edit, and finalize attendance and marks; manage extra classes and view timetables; assign substitute teachers when needed.
+- **Administrator Controls**: Admins can add, edit, and manage student and staff records, oversee system data integrity, and generate reports.
+- **Attendance Management**: Enables teachers to enter and modify attendance records before locking them, reducing errors.
+- **Marks Management**: Facilitates entry and editing of marks with finalization options.
+- **Timetable Management**: Provides scheduling and viewing of class timetables for all users.
+- **Reports Generation**: Teachers and admins can generate detailed reports for monitoring academic progress.
+- **Security**: Robust security measures to protect sensitive data and ensure privacy.
+- **User-Friendly Interface**: Intuitive and minimal learning curve for efficient use.
 
-Go to the College-ERP folder and run
+## Motivation
 
-```bash
-python manage.py runserver
-```
+Managing college data manually is time-consuming and prone to errors. Different departments often operate in silos with separate systems, causing inefficiencies and data inconsistencies. This project was motivated by the need to develop a centralized ERP system that integrates various college functions, reduces data errors, and improves accessibility and management of student and staff information.
 
-Then go to the browser and enter the url **http://127.0.0.1:8000/**
+## Technologies Used
 
+- **Backend**: Django (Python)
+- **Database**: MySQL (or SQLite for development)
+- **Frontend**: HTML, CSS, JavaScript (Django Templates)
+- **Others**: Bootstrap or similar CSS framework (if applicable)
 
-## Login
+## How to Run the Project
 
-The login page is common for students and teachers.  
-The username is their name and password for everyone is 'project123'.  
+### Prerequisites
 
-Example usernames:  
-student- 'samarth'  
-teacher- 'trisila'  
+- Python 3.x installed
+- MySQL server installed and running (if using MySQL)
+- pip package manager
+- Git (optional)
 
-You can access the django admin page at **http://127.0.0.1:8000/admin** and login with username 'admin' and the above password.
+### Installation Steps
 
-Also a new admin user can be created using
+1. **Clone the repository** (if available):
+   ```bash
+   git clone 
+   cd 
+   ```
 
-```bash
-python manage.py createsuperuser
-```
+2. **Create and activate a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   ```
 
-## Users
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   *(If `requirements.txt` is not provided, install Django manually: `pip install django`)*
 
-New students and teachers can be added through the admin page. A new user needs to be created for each. 
+4. **Configure database settings**:
+   - Update `settings.py` with your MySQL database credentials.
+   - Alternatively, use SQLite for initial testing.
 
-The admin page is used to modify all tables such as Students, Teachers, Departments, Courses, Classes etc.
+5. **Apply migrations**:
+   ```bash
+   python manage.py migrate
+   ```
 
-**For more details regarding the system and features please refer the reports included.**
+6. **Create a superuser for admin access**:
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-## Update (29/11/2020)
+7. **Run the development server**:
+   ```bash
+   python manage.py runserver
+   ```
 
-Added method to reset attendance time range in Django Admin page.
+8. **Access the application**:
+   Open a web browser and navigate to `http://127.0.0.1:8000/`
 
-![alt_text](https://i.imgur.com/0xOWmUZ.png)
+### Usage
 
-This is present in Django Admin -> Attendance (http://127.0.0.1:8000/admin/info/attendanceclass/).  
-Start Date: Start Date of Attendance period  
-End Date: End Date of Attendance period
+- **Administrator**: Manage student and staff records, generate reports, and oversee system operations.
+- **Teacher**: Manage attendance, marks, timetables, and assign extra classes.
+- **Student**: View personal profile, attendance, marks, and timetable.
 
-This will delete all present attendance data and create new attendance objects for the given time range. 
+## Project Structure
 
-## Screenshots
+- `manage.py` - Django management script
+- `/` - Django app containing models, views, templates, and static files
+- `templates/` - HTML templates for UI
+- `static/` - CSS, JS, images
+- `db.sqlite3` or MySQL database - Data storage
 
-### Teacher Page
+## Testing
 
-![alt text](https://imgur.com/pMAoEbG.png)
+The system underwent various testing methods including:
 
-![alt text](https://imgur.com/ZiQ3RRA.png)
+- White Box Testing
+- Black Box Testing
+- Acceptance Testing
 
-![alt text](https://imgur.com/i025CJW.png)
+All tests showed positive results, confirming system reliability and functionality.
 
-![alt text](https://imgur.com/HQlLYmC.png)
+## Contributors
 
-![alt text](https://imgur.com/j6RyBmU.png)
+- Abhishek Pawar (72174170D)
+- Atharva Kadam (72174157G)
+- Samyag Shah (72174180M)
 
-![alt text](https://imgur.com/xIKEMvQ.png)
+Under the guidance of Prof. N.M. Dimble, Department of Computer Engineering, NGIFOE, Pune.
 
-![alt text](https://imgur.com/4Rl7Fpv.png)
+## Acknowledgments
 
-### Student Page
+We express our sincere gratitude to our guide Prof. N.M. Dimble, project coordinator Prof. B.M. Borhade, Head of Department Prof. C.S. Wagh, and all faculty members for their valuable support and guidance throughout the project.
 
-![alt text](https://imgur.com/isL9cjz.png)
+---
 
-![alt text](https://imgur.com/5pzl7m3.png)
+This README provides a thorough description of your NGIFOE ERP System project, its features, motivation, and instructions for setup and usage, suitable for your GitHub repository[1]. If you need, I can help you add screenshots or further deployment instructions.
 
-![alt text](https://imgur.com/7zWhHZx.png)
-
-![alt text](https://imgur.com/fu7gxk8.png)
-
-![alt text](https://imgur.com/NZqU268.png)
-
-### Admin Page
-
-![alt text](https://imgur.com/sDvDc9N.png)
-
-![alt text](https://imgur.com/tMKWx6f.png)
-
-![alt text](https://imgur.com/PvCsNeB.png)
+[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/14477163/75dadbc0-a1f7-4c24-9195-deae217ff241/BE_PROJECT_STAGE_II_Report_Final.pdf
