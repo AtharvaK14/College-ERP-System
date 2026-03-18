@@ -1,116 +1,215 @@
-# NGIFOE ERP System
+# College ERP System
 
-## Overview
+A full-stack College Enterprise Resource Planning system built with **FastAPI** (backend), **Next.js 14** (frontend), and **MySQL** (database).
 
-The NGIFOE ERP System is a comprehensive College Information Management System developed using the Django framework. It is designed to facilitate seamless interaction between students, teachers, and administrators by centralizing and automating key college management functions such as attendance, marks, and timetable management. The system addresses the challenges of manual data handling in educational institutions, providing a smart, efficient, and secure platform to manage college operations from anywhere through a unified dashboard.
+## Feature Overview
 
-## Features
+| Role | Features |
+|------|----------|
+| Admin | Manage departments, classes, courses, teachers, students, course assignments, leave approvals, notices |
+| Teacher | Mark attendance, enter marks (CIE/SEE), apply for leave, respond to student complaints |
+| Student | View attendance with calendar, view marks, report card with CGPA, notices, submit complaints, student forum |
 
-- **Role-Based Access**: Separate interfaces and functionalities for Students, Teachers, and Administrators.
-- **Student Profile Management**: Students can view and update their personal details including attendance, marks, and timetable.
-- **Teacher Management**: Teachers can record, edit, and finalize attendance and marks; manage extra classes and view timetables; assign substitute teachers when needed.
-- **Administrator Controls**: Admins can add, edit, and manage student and staff records, oversee system data integrity, and generate reports.
-- **Attendance Management**: Enables teachers to enter and modify attendance records before locking them, reducing errors.
-- **Marks Management**: Facilitates entry and editing of marks with finalization options.
-- **Timetable Management**: Provides scheduling and viewing of class timetables for all users.
-- **Reports Generation**: Teachers and admins can generate detailed reports for monitoring academic progress.
-- **Security**: Robust security measures to protect sensitive data and ensure privacy.
-- **User-Friendly Interface**: Intuitive and minimal learning curve for efficient use.
+---
 
-## Motivation
-
-Managing college data manually is time-consuming and prone to errors. Different departments often operate in silos with separate systems, causing inefficiencies and data inconsistencies. This project was motivated by the need to develop a centralized ERP system that integrates various college functions, reduces data errors, and improves accessibility and management of student and staff information.
-
-## Technologies Used
-
-- **Backend**: Django (Python)
-- **Database**: MySQL (or SQLite for development)
-- **Frontend**: HTML, CSS, JavaScript (Django Templates)
-- **Others**: Bootstrap or similar CSS framework (if applicable)
-
-## How to Run the Project
+## Quick Start (Docker — Recommended)
 
 ### Prerequisites
+- Docker Desktop installed and running
 
-- Python 3.x installed
-- MySQL server installed and running (if using MySQL)
-- pip package manager
-- Git (optional)
+### Run everything with one command
 
-### Installation Steps
+```bash
+git clone <your-repo>
+cd college-erp
+docker-compose up --build
+```
 
-1. **Clone the repository** (if available):
-   ```bash
-   git clone 
-   cd 
-   ```
+Wait ~60 seconds for MySQL to initialize and all services to start.
 
-2. **Create and activate a virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
-   ```
+Then seed the database with sample data:
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *(If `requirements.txt` is not provided, install Django manually: `pip install django`)*
+```bash
+docker-compose exec backend python -m app.seed
+```
 
-4. **Configure database settings**:
-   - Update `settings.py` with your MySQL database credentials.
-   - Alternatively, use SQLite for initial testing.
+Open:
+- Frontend: http://localhost:3000
+- Backend API docs: http://localhost:8000/docs
 
-5. **Apply migrations**:
-   ```bash
-   python manage.py migrate
-   ```
+### Demo credentials
 
-6. **Create a superuser for admin access**:
-   ```bash
-   python manage.py createsuperuser
-   ```
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `admin123` |
+| Teacher | `prof.manimala` | `teacher123` |
+| Teacher | `prof.divakar` | `teacher123` |
+| Student | `1si21cs001` | `student123` |
+| Student | `1si21cs002` | `student123` |
 
-7. **Run the development server**:
-   ```bash
-   python manage.py runserver
-   ```
+---
 
-8. **Access the application**:
-   Open a web browser and navigate to `http://127.0.0.1:8000/`
+## Manual Local Setup (without Docker)
 
-### Usage
+### 1. MySQL
 
-- **Administrator**: Manage student and staff records, generate reports, and oversee system operations.
-- **Teacher**: Manage attendance, marks, timetables, and assign extra classes.
-- **Student**: View personal profile, attendance, marks, and timetable.
+Create database and user:
+
+```sql
+CREATE DATABASE college_erp;
+CREATE USER 'erp_user'@'localhost' IDENTIFIED BY 'erp_pass';
+GRANT ALL PRIVILEGES ON college_erp.* TO 'erp_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+### 2. Backend
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# Edit .env if your MySQL credentials differ
+
+uvicorn app.main:app --reload   # Starts on http://localhost:8000
+```
+
+Seed in a separate terminal:
+
+```bash
+cd backend
+source venv/bin/activate
+python -m app.seed
+```
+
+### 3. Frontend
+
+```bash
+cd frontend
+cp .env.example .env.local
+npm install
+npm run dev                     # Starts on http://localhost:3000
+```
+
+---
 
 ## Project Structure
 
-- `manage.py` - Django management script
-- `/` - Django app containing models, views, templates, and static files
-- `templates/` - HTML templates for UI
-- `static/` - CSS, JS, images
-- `db.sqlite3` or MySQL database - Data storage
+```
+college-erp/
+├── backend/
+│   ├── app/
+│   │   ├── main.py             # FastAPI app + CORS + lifespan
+│   │   ├── config.py           # Settings via pydantic-settings
+│   │   ├── database.py         # Async SQLAlchemy engine + session
+│   │   ├── seed.py             # Sample data seeder
+│   │   ├── models/             # All SQLAlchemy ORM models
+│   │   ├── schemas/            # All Pydantic v2 schemas
+│   │   ├── core/
+│   │   │   ├── security.py     # JWT + bcrypt
+│   │   │   └── deps.py         # FastAPI dependencies + role guards
+│   │   └── routers/
+│   │       ├── auth.py         # Login, refresh, me
+│   │       ├── admin.py        # Full CRUD for all entities
+│   │       ├── teacher.py      # Attendance, marks, leaves, complaints
+│   │       └── student.py      # View attendance, marks, report card, forum
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── frontend/
+│   └── src/
+│       ├── app/
+│       │   ├── login/          # Login page
+│       │   ├── admin/          # All admin pages
+│       │   ├── teacher/        # All teacher pages
+│       │   └── student/        # All student pages
+│       ├── components/
+│       │   ├── ui/             # Button, Card, Table, Modal, Badge, etc.
+│       │   └── layout/
+│       │       ├── Sidebar.tsx # Role-aware navigation sidebar
+│       │       └── DashboardLayout.tsx
+│       └── lib/
+│           ├── api.ts          # Axios client + all typed API calls
+│           └── auth-context.tsx # Auth state + login/logout
+│
+└── docker-compose.yml
+```
 
-## Testing
+---
 
-The system underwent various testing methods including:
+## API Documentation
 
-- White Box Testing
-- Black Box Testing
-- Acceptance Testing
+FastAPI auto-generates interactive docs at:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-All tests showed positive results, confirming system reliability and functionality.
+All endpoints are grouped by role:
+- `/api/auth/*` — authentication
+- `/api/admin/*` — admin operations (requires admin JWT)
+- `/api/teacher/*` — teacher operations (requires teacher or admin JWT)
+- `/api/student/*` — student operations (requires student JWT)
 
-## Contributors
+---
 
-- Abhishek Pawar (72174170D)
-- Atharva Kadam (72174157G)
-- Samyag Shah (72174180M)
+## Deployment (Free Tier Live Demo)
 
-Under the guidance of Prof. N.M. Dimble, Department of Computer Engineering, NGIFOE, Pune.
+### Backend → Render.com
 
-## Acknowledgments
+1. Push code to GitHub
+2. Create new **Web Service** on Render.com
+3. Root directory: `backend`
+4. Build command: `pip install -r requirements.txt`
+5. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+6. Add environment variables:
+   - `DATABASE_URL` — your PlanetScale or Render MySQL URL
+   - `SECRET_KEY` — any long random string
+   - `FRONTEND_URL` — your Vercel frontend URL
 
-We express our sincere gratitude to our guide Prof. N.M. Dimble, project coordinator Prof. B.M. Borhade, Head of Department Prof. C.S. Wagh, and all faculty members for their valuable support and guidance throughout the project.
+To seed on Render: go to Shell tab → `python -m app.seed`
+
+### Frontend → Vercel
+
+1. Import GitHub repo on Vercel
+2. Root directory: `frontend`
+3. Add environment variable:
+   - `NEXT_PUBLIC_API_URL` — your Render backend URL
+
+### Database → PlanetScale (free MySQL)
+
+1. Create account at planetscale.com
+2. Create database `college_erp`
+3. Get connection string in format:
+   `mysql+aiomysql://user:pass@host/college_erp?ssl_ca=/etc/ssl/certs/ca-certificates.crt`
+
+---
+
+## Database Schema
+
+Entities and relationships (from original ERD):
+
+- **Department** → has many Classes, Teachers, Courses
+- **Class** (semester + section) → belongs to Department, has many Students
+- **Teacher** → belongs to Department, assigned to TeacherCourse
+- **Course** → belongs to Department
+- **TeacherCourse** → Teacher + Course + Class + timetable slot
+- **Student** → belongs to Class, enrolled in StudentCourse
+- **StudentCourse** → Student + Course enrollment
+- **Attendance** → Student + Course + Date + Status (present/absent)
+- **Marks** → Student + Course + MarkType (CIE1-5, SEE) + Score
+- **Leave** → Teacher leave request with approval workflow
+- **Notice** → Admin broadcast to all students
+- **Complaint** → Student to Teacher with response workflow
+- **Message** → Direct messages + Forum posts
+
+---
+
+## Academic Grading Logic
+
+- CIE: 5 internal exams per course, best 3 counted, averaged to 50%
+- SEE: 1 semester-end exam, counted at 50%
+- Final percentage = (CIE_avg × 0.5) + (SEE_pct × 0.5)
+- Grade points: O(10), A+(9), A(8), B+(7), B(6), C(5), F(0)
+- CGPA = Σ(grade_point × credits) / Σ(credits)
+- Attendance threshold: 75% (alerts shown below this)
