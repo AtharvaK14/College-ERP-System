@@ -8,7 +8,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import require_student, require_any
+from app.core.deps import require_student
 from app.database import get_db
 from app.models import (
     Attendance, AttendanceStatus, Class, ComplaintStatus, Course,

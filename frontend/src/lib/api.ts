@@ -100,6 +100,10 @@ export const teacherApi = {
   respondComplaint: (id: number, d: object) => api.put(`/api/teacher/complaints/${id}`, d),
 }
 
+export const sharedApi = {
+  teachers: () => api.get('/api/shared/teachers'),
+}
+
 export const studentApi = {
   dashboard:       () => api.get('/api/student/dashboard'),
   profile:         () => api.get('/api/student/profile'),

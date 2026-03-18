@@ -18,8 +18,8 @@ from app.models import (
 from app.schemas import (
     AdminStats, ClassCreate, ClassOut, CourseCreate, CourseOut,
     DepartmentCreate, DepartmentOut, LeaveOut, LeaveStatusUpdate,
-    NoticeCreate, NoticeOut, StudentCreate, StudentOut,
-    TeacherCourseCreate, TeacherCourseOut, TeacherCreate, TeacherOut,
+    NoticeCreate, NoticeOut, StudentCreate, StudentOut, StudentUpdate,
+    TeacherCourseCreate, TeacherCourseOut, TeacherCreate, TeacherOut, TeacherUpdate,
     StudentCourseCreate, StudentCourseOut,
 )
 
@@ -255,7 +255,7 @@ async def create_teacher(
 @router.put("/teachers/{teacher_id}", response_model=TeacherOut)
 async def update_teacher(
     teacher_id: int,
-    body: dict,
+    body: TeacherUpdate,
     db: AsyncSession = Depends(get_db),
     _: User = Depends(require_admin),
 ):
@@ -263,9 +263,8 @@ async def update_teacher(
     teacher = result.scalar_one_or_none()
     if not teacher:
         raise HTTPException(404, "Teacher not found")
-    for k, v in body.items():
-        if hasattr(teacher, k) and v is not None:
-            setattr(teacher, k, v)
+    for k, v in body.model_dump(exclude_none=True).items():
+        setattr(teacher, k, v)
     await db.flush()
     result = await db.execute(
         select(Teacher).options(selectinload(Teacher.department)).where(Teacher.id == teacher_id)
@@ -350,6 +349,28 @@ async def create_student(
         select(Student)
         .options(selectinload(Student.class_).selectinload(Class.department))
         .where(Student.id == student.id)
+    )
+    return result.scalar_one()
+
+
+@router.put("/students/{student_id}", response_model=StudentOut)
+async def update_student(
+    student_id: int,
+    body: StudentUpdate,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    result = await db.execute(select(Student).where(Student.id == student_id))
+    student = result.scalar_one_or_none()
+    if not student:
+        raise HTTPException(404, "Student not found")
+    for k, v in body.model_dump(exclude_none=True).items():
+        setattr(student, k, v)
+    await db.flush()
+    result = await db.execute(
+        select(Student)
+        .options(selectinload(Student.class_).selectinload(Class.department))
+        .where(Student.id == student_id)
     )
     return result.scalar_one()
 

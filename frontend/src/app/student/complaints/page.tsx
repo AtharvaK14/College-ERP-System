@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
-import { studentApi, adminApi } from '@/lib/api'
+import { studentApi, sharedApi } from '@/lib/api'
 import { Button, Card, Table, Td, Modal, Input, Textarea, Select, PageHeader, EmptyState, Spinner, Badge } from '@/components/ui'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -20,7 +20,7 @@ export default function StudentComplaints() {
   const load = async () => {
     setLoading(true)
     try {
-      const [c, t] = await Promise.all([studentApi.complaints(), adminApi.teachers()])
+      const [c, t] = await Promise.all([studentApi.complaints(), sharedApi.teachers()])
       setComplaints(c.data); setTeachers(t.data)
     } catch { toast.error('Failed to load') }
     finally { setLoading(false) }

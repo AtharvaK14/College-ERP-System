@@ -1,13 +1,17 @@
 version: '3.9'
 
+# Load secrets from .env.docker (gitignored).
+# Copy .env.docker.example to .env.docker before first run.
+
 services:
   db:
     image: mysql:8.0
+    env_file: .env.docker
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: college_erp
-      MYSQL_USER: erp_user
-      MYSQL_PASSWORD: erp_pass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -19,13 +23,16 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    env_file: .env.docker
     environment:
-      DATABASE_URL: mysql+aiomysql://erp_user:erp_pass@db:3306/college_erp
-      SECRET_KEY: local-dev-secret-key-change-for-production
-      FRONTEND_URL: http://localhost:3000
+      DATABASE_URL: mysql+aiomysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      SECRET_KEY: ${SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
     depends_on:
       db:
         condition: service_healthy
@@ -38,8 +45,9 @@ services:
     working_dir: /app
     ports:
       - "3000:3000"
+    env_file: .env.docker
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     depends_on:
       - backend
     volumes:

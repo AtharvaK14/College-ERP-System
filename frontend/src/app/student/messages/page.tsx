@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Send } from 'lucide-react'
-import { studentApi, adminApi } from '@/lib/api'
+import { studentApi, sharedApi } from '@/lib/api'
 import { Card, CardBody, Select, PageHeader, Spinner } from '@/components/ui'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -18,7 +18,7 @@ export default function StudentMessages() {
 
   const load = async () => {
     try {
-      const [m, t] = await Promise.all([studentApi.messages(), adminApi.teachers()])
+      const [m, t] = await Promise.all([studentApi.messages(), sharedApi.teachers()])
       setMessages(m.data); setTeachers(t.data)
     } catch { toast.error('Failed to load messages') }
     finally { setLoading(false) }

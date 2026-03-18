@@ -22,6 +22,11 @@ A full-stack College Enterprise Resource Planning system built with **FastAPI** 
 ```bash
 git clone <your-repo>
 cd college-erp
+
+# Required first step: create local secrets file from the example
+cp .env.docker.example .env.docker
+# Edit .env.docker and set a real SECRET_KEY before running
+
 docker-compose up --build
 ```
 
