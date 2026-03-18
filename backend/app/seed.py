@@ -12,7 +12,7 @@ from sqlalchemy import select
 from app.core.security import hash_password
 from app.database import engine, AsyncSessionLocal, Base
 from app.models import (
-    AttendanceStatus, Class, Complaint, Course, Department,
+    Attendance, AttendanceStatus, Class, Complaint, Course, Department,
     Leave, LeaveType, Marks, MarkType, Message, Notice,
     Sex, Student, StudentCourse, Teacher, TeacherCourse,
     User, UserRole,

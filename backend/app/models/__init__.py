@@ -12,6 +12,7 @@ from sqlalchemy import (
     Boolean, Column, Date, DateTime, Enum, ForeignKey,
     Integer, String, Text, UniqueConstraint, func,
 )
+from sqlalchemy.dialects.postgresql import ENUM as PG_ENUM
 from sqlalchemy.orm import relationship
 
 from app.database import Base

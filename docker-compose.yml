@@ -1,23 +1,17 @@
-version: '3.9'
-
-# Load secrets from .env.docker (gitignored).
-# Copy .env.docker.example to .env.docker before first run.
-
 services:
   db:
-    image: mysql:8.0
+    image: postgres:16-alpine
     env_file: .env.docker
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -28,9 +22,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    restart: on-failure
     env_file: .env.docker
     environment:
-      DATABASE_URL: mysql+aiomysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
       FRONTEND_URL: ${FRONTEND_URL}
     depends_on:
@@ -57,4 +52,4 @@ services:
     command: sh -c "npm install && npm run dev"
 
 volumes:
-  mysql_data:
+  postgres_data:
