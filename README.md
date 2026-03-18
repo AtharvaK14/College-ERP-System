@@ -1,48 +1,14 @@
 # College ERP System
 
-A full-stack College Enterprise Resource Planning system built with **FastAPI** (backend), **Next.js 14** (frontend), and **MySQL** (database).
+A full-stack Enterprise Resource Planning system built for college management. Supports three roles — **Admin**, **Teacher**, and **Student** — each with their own dedicated portal and feature set.
 
-## Feature Overview
+**Live Demo:** [https://college-erp-system-one.vercel.app](https://college-erp-system-one.vercel.app)
 
-| Role | Features |
-|------|----------|
-| Admin | Manage departments, classes, courses, teachers, students, course assignments, leave approvals, notices |
-| Teacher | Mark attendance, enter marks (CIE/SEE), apply for leave, respond to student complaints |
-| Student | View attendance with calendar, view marks, report card with CGPA, notices, submit complaints, student forum |
+> **Note:** The backend is hosted on Render's free tier and spins down after 15 minutes of inactivity. If the login takes 30–60 seconds on your first visit, that is normal — the server is waking up. Subsequent requests will be instant.
 
 ---
 
-## Quick Start (Docker — Recommended)
-
-### Prerequisites
-- Docker Desktop installed and running
-
-### Run everything with one command
-
-```bash
-git clone <your-repo>
-cd college-erp
-
-# Required first step: create local secrets file from the example
-cp .env.docker.example .env.docker
-# Edit .env.docker and set a real SECRET_KEY before running
-
-docker-compose up --build
-```
-
-Wait ~60 seconds for MySQL to initialize and all services to start.
-
-Then seed the database with sample data:
-
-```bash
-docker-compose exec backend python -m app.seed
-```
-
-Open:
-- Frontend: http://localhost:3000
-- Backend API docs: http://localhost:8000/docs
-
-### Demo credentials
+## Demo Credentials
 
 | Role | Username | Password |
 |------|----------|----------|
@@ -54,49 +20,45 @@ Open:
 
 ---
 
-## Manual Local Setup (without Docker)
+## Features
 
-### 1. MySQL
+### Admin Portal
+- Dashboard with live stats (students, teachers, departments, courses, pending leaves)
+- Full CRUD for Departments, Classes, Courses, Teachers, and Students
+- Assign teachers to courses and classes with timetable slots
+- Enroll students in courses
+- Approve or reject teacher leave requests
+- Post and manage college-wide notices
 
-Create database and user:
+### Teacher Portal
+- Dashboard showing assigned courses, timetable, and pending actions
+- Mark attendance for entire classes with one-click present/absent toggle
+- Enter and update exam marks (CIE 1–5 and SEE) for all students
+- Apply for casual, medical, or earned leave
+- View and respond to student complaints
 
-```sql
-CREATE DATABASE college_erp;
-CREATE USER 'erp_user'@'localhost' IDENTIFIED BY 'erp_pass';
-GRANT ALL PRIVILEGES ON college_erp.* TO 'erp_user'@'localhost';
-FLUSH PRIVILEGES;
-```
+### Student Portal
+- Dashboard with attendance progress bars and low-attendance warnings (below 75%)
+- Day-by-day attendance calendar per course
+- View marks for all CIE and SEE exams
+- Full report card with CGPA calculation (10-point scale)
+- College notices board
+- Submit complaints and queries to teachers
+- Direct messaging to teachers
+- Student forum for peer communication
 
-### 2. Backend
+---
 
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+## Tech Stack
 
-cp .env.example .env
-# Edit .env if your MySQL credentials differ
-
-uvicorn app.main:app --reload   # Starts on http://localhost:8000
-```
-
-Seed in a separate terminal:
-
-```bash
-cd backend
-source venv/bin/activate
-python -m app.seed
-```
-
-### 3. Frontend
-
-```bash
-cd frontend
-cp .env.example .env.local
-npm install
-npm run dev                     # Starts on http://localhost:3000
-```
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 14, TypeScript, Tailwind CSS |
+| Backend | FastAPI (Python), async SQLAlchemy |
+| Database | PostgreSQL (Neon) |
+| Auth | JWT (access + refresh tokens), bcrypt |
+| Deployment | Vercel (frontend), Render (backend), Neon (database) |
+| Local Dev | Docker Compose |
 
 ---
 
@@ -106,115 +68,202 @@ npm run dev                     # Starts on http://localhost:3000
 college-erp/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py             # FastAPI app + CORS + lifespan
-│   │   ├── config.py           # Settings via pydantic-settings
-│   │   ├── database.py         # Async SQLAlchemy engine + session
-│   │   ├── seed.py             # Sample data seeder
-│   │   ├── models/             # All SQLAlchemy ORM models
-│   │   ├── schemas/            # All Pydantic v2 schemas
+│   │   ├── main.py              # FastAPI app entry point
+│   │   ├── config.py            # Settings via environment variables
+│   │   ├── database.py          # Async SQLAlchemy engine and session
+│   │   ├── seed.py              # Sample data seeder
+│   │   ├── models/              # All database models
+│   │   ├── schemas/             # Pydantic request/response schemas
 │   │   ├── core/
-│   │   │   ├── security.py     # JWT + bcrypt
-│   │   │   └── deps.py         # FastAPI dependencies + role guards
+│   │   │   ├── security.py      # JWT and bcrypt utilities
+│   │   │   └── deps.py          # Role-based access guards
 │   │   └── routers/
-│   │       ├── auth.py         # Login, refresh, me
-│   │       ├── admin.py        # Full CRUD for all entities
-│   │       ├── teacher.py      # Attendance, marks, leaves, complaints
-│   │       └── student.py      # View attendance, marks, report card, forum
+│   │       ├── auth.py          # Login, refresh, /me
+│   │       ├── admin.py         # Admin endpoints
+│   │       ├── teacher.py       # Teacher endpoints
+│   │       ├── student.py       # Student endpoints
+│   │       └── shared.py        # Shared endpoints (any role)
 │   ├── requirements.txt
 │   └── Dockerfile
 │
 ├── frontend/
 │   └── src/
 │       ├── app/
-│       │   ├── login/          # Login page
-│       │   ├── admin/          # All admin pages
-│       │   ├── teacher/        # All teacher pages
-│       │   └── student/        # All student pages
+│       │   ├── login/           # Login page
+│       │   ├── admin/           # Admin pages
+│       │   ├── teacher/         # Teacher pages
+│       │   └── student/         # Student pages
 │       ├── components/
-│       │   ├── ui/             # Button, Card, Table, Modal, Badge, etc.
-│       │   └── layout/
-│       │       ├── Sidebar.tsx # Role-aware navigation sidebar
-│       │       └── DashboardLayout.tsx
+│       │   ├── ui/              # Shared UI components
+│       │   └── layout/          # Sidebar and dashboard layout
 │       └── lib/
-│           ├── api.ts          # Axios client + all typed API calls
-│           └── auth-context.tsx # Auth state + login/logout
+│           ├── api.ts           # Axios client and API calls
+│           └── auth-context.tsx # Auth state management
 │
-└── docker-compose.yml
+├── docker-compose.yml
+├── .env.docker.example
+└── README.md
+```
+
+---
+
+## Running Locally
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+- Git
+
+### Steps
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/AtharvaK14/College-ERP-System.git
+cd College-ERP-System
+```
+
+**2. Create your local secrets file**
+
+```bash
+# macOS / Linux
+cp .env.docker.example .env.docker
+
+# Windows (PowerShell)
+Copy-Item .env.docker.example .env.docker
+```
+
+Open `.env.docker` and fill in the values. Generate a secret key by running:
+
+```bash
+# macOS / Linux
+openssl rand -hex 32
+
+# Windows PowerShell
+-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 64 | ForEach-Object {[char]$_})
+```
+
+Your `.env.docker` should look like this:
+
+```env
+POSTGRES_DB=college_erp
+POSTGRES_USER=erp_user
+POSTGRES_PASSWORD=your_strong_password
+
+SECRET_KEY=your_generated_secret_key
+FRONTEND_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+**3. Start all services**
+
+```bash
+docker-compose --env-file .env.docker up --build
+```
+
+Wait until you see this line in the logs:
+
+```
+backend-1  | Database connected on attempt 1
+backend-1  | INFO:     Application startup complete.
+```
+
+**4. Seed the database**
+
+Open a second terminal and run:
+
+```bash
+docker-compose --env-file .env.docker exec backend python -m app.seed
+```
+
+You should see:
+
+```
+Seeding database...
+Created admin user (username: admin, password: admin123)
+Created 2 teachers (password: teacher123)
+Created 5 students (password: student123)
+=== Seed complete ===
+```
+
+**5. Open the app**
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| API Docs (Swagger) | http://localhost:8000/docs |
+
+Log in with any of the demo credentials listed above.
+
+**6. Stop the app**
+
+```bash
+docker-compose --env-file .env.docker down
+```
+
+Add `-v` to also delete the database volume:
+
+```bash
+docker-compose --env-file .env.docker down -v
 ```
 
 ---
 
 ## API Documentation
 
-FastAPI auto-generates interactive docs at:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+FastAPI automatically generates interactive API documentation. When running locally, visit:
 
-All endpoints are grouped by role:
-- `/api/auth/*` — authentication
-- `/api/admin/*` — admin operations (requires admin JWT)
-- `/api/teacher/*` — teacher operations (requires teacher or admin JWT)
-- `/api/student/*` — student operations (requires student JWT)
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
 
----
+All 57 endpoints are grouped by role:
 
-## Deployment (Free Tier Live Demo)
-
-### Backend → Render.com
-
-1. Push code to GitHub
-2. Create new **Web Service** on Render.com
-3. Root directory: `backend`
-4. Build command: `pip install -r requirements.txt`
-5. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-6. Add environment variables:
-   - `DATABASE_URL` — your PlanetScale or Render MySQL URL
-   - `SECRET_KEY` — any long random string
-   - `FRONTEND_URL` — your Vercel frontend URL
-
-To seed on Render: go to Shell tab → `python -m app.seed`
-
-### Frontend → Vercel
-
-1. Import GitHub repo on Vercel
-2. Root directory: `frontend`
-3. Add environment variable:
-   - `NEXT_PUBLIC_API_URL` — your Render backend URL
-
-### Database → PlanetScale (free MySQL)
-
-1. Create account at planetscale.com
-2. Create database `college_erp`
-3. Get connection string in format:
-   `mysql+aiomysql://user:pass@host/college_erp?ssl_ca=/etc/ssl/certs/ca-certificates.crt`
-
----
-
-## Database Schema
-
-Entities and relationships (from original ERD):
-
-- **Department** → has many Classes, Teachers, Courses
-- **Class** (semester + section) → belongs to Department, has many Students
-- **Teacher** → belongs to Department, assigned to TeacherCourse
-- **Course** → belongs to Department
-- **TeacherCourse** → Teacher + Course + Class + timetable slot
-- **Student** → belongs to Class, enrolled in StudentCourse
-- **StudentCourse** → Student + Course enrollment
-- **Attendance** → Student + Course + Date + Status (present/absent)
-- **Marks** → Student + Course + MarkType (CIE1-5, SEE) + Score
-- **Leave** → Teacher leave request with approval workflow
-- **Notice** → Admin broadcast to all students
-- **Complaint** → Student to Teacher with response workflow
-- **Message** → Direct messages + Forum posts
+| Prefix | Role | Example endpoints |
+|--------|------|------------------|
+| `/api/auth` | Any | Login, refresh token, /me |
+| `/api/admin` | Admin only | CRUD for all entities, leave approvals |
+| `/api/teacher` | Teacher + Admin | Attendance, marks, leaves, complaints |
+| `/api/student` | Student only | View attendance, marks, report card |
+| `/api/shared` | Any authenticated | Teacher listing for dropdowns |
 
 ---
 
 ## Academic Grading Logic
 
-- CIE: 5 internal exams per course, best 3 counted, averaged to 50%
-- SEE: 1 semester-end exam, counted at 50%
-- Final percentage = (CIE_avg × 0.5) + (SEE_pct × 0.5)
-- Grade points: O(10), A+(9), A(8), B+(7), B(6), C(5), F(0)
-- CGPA = Σ(grade_point × credits) / Σ(credits)
-- Attendance threshold: 75% (alerts shown below this)
+- Each course has 5 CIE (internal) exams and 1 SEE (semester-end) exam
+- CIE: best 3 out of 5 scores are averaged, contributing 50% of the final grade
+- SEE: contributes the remaining 50%
+- Final percentage = (CIE average × 0.5) + (SEE percentage × 0.5)
+- CGPA is calculated on a 10-point scale weighted by course credits
+- Attendance below 75% triggers a warning on the student dashboard
+
+| Percentage | Grade | Grade Point |
+|-----------|-------|-------------|
+| ≥ 90 | O | 10.0 |
+| ≥ 80 | A+ | 9.0 |
+| ≥ 70 | A | 8.0 |
+| ≥ 60 | B+ | 7.0 |
+| ≥ 50 | B | 6.0 |
+| ≥ 40 | C | 5.0 |
+| < 40 | F | 0.0 |
+
+---
+
+## Deployment
+
+The live demo uses a fully free stack:
+
+| Service | Provider | Purpose |
+|---------|----------|---------|
+| Frontend | [Vercel](https://vercel.com) | Next.js hosting |
+| Backend | [Render](https://render.com) | FastAPI web service |
+| Database | [Neon](https://neon.tech) | Serverless PostgreSQL |
+
+See [README-DEPLOY.md](README-DEPLOY.md) for step-by-step deployment instructions.
+
+---
+
+## License
+
+MIT
