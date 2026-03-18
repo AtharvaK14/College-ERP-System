@@ -54,7 +54,7 @@ export default function AdminTeachers() {
             {teachers.map(t => (
               <tr key={t.id}>
                 <Td className="font-medium">{t.name}</Td>
-                <Td><Badge label={t.department?.code || '?'} color="emerald" /></Td>
+                <Td><Badge label={t.department?.code || '?'} color="green" /></Td>
                 <Td>{t.phone || '-'}</Td>
                 <Td><Button variant="danger" size="sm" onClick={() => handleDelete(t.id, t.name)}><Trash2 className="h-3.5 w-3.5" /></Button></Td>
               </tr>
